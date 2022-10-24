@@ -5,26 +5,23 @@
 package pe.edu.upeu.app.dao;
 
 import java.util.List;
-import pe.edu.upeu.app.modelo.UsuarioTO;
+import pe.edu.upeu.app.modelo.MarcaTO;
 
 /**
  *
  * @author ACER ASPIRE
  */
-public interface UsuarioDaoI {
+public interface MarcaDaoI {
 
-    public int create(UsuarioTO d);
+    public int create(MarcaTO d);
 
-    public int update(UsuarioTO d);
+    public int update(MarcaTO d);
 
     public int delete(String id) throws Exception;
 
-    public List<UsuarioTO> listCmb(String filter);
+    public List<MarcaTO> listarMarca();
 
-    public List listarUsuario();
+    public MarcaTO buscarMarca(String nombreM);
 
-    public UsuarioTO buscarUsuario(String usuario);
-
-    public void reportarUsuario();
-
+    public void reportarMarca();
 }

@@ -6,21 +6,33 @@ package pe.edu.upeu.app.modelo;
 
 import lombok.Data;
 
+
+
 /**
  *
  * @author ACER ASPIRE
  */
 @Data
 public class UsuarioTO {
-     
-     private String login, clave;
 
-    public String getLogin() {
-        return login;
+    public int id_usuario;
+
+    public String user, clave;
+
+    public int getId_usuario() {
+        return id_usuario;
     }
 
-    public void setLogin(String login) {
-        this.login = login;
+    public void setId_usuario(int id_usuario) {
+        this.id_usuario = id_usuario;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public String getClave() {
@@ -31,6 +43,4 @@ public class UsuarioTO {
         this.clave = clave;
     }
 
-   
-     
 }

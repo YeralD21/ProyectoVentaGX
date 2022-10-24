@@ -14,39 +14,45 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import pe.edu.upeu.app.dao.conx.Conn;
-import pe.edu.upeu.app.modelo.CategoriaTO;
+import pe.edu.upeu.app.modelo.ProductoTO;
 import pe.edu.upeu.app.util.ErrorLogger;
 
 /**
  *
  * @author ACER ASPIRE
  */
-public class CategoriaDAO implements CategoriaDaoI {
+public class ProductoDAO implements ProductoDaoI {
 
     Statement stmt = null;
     Vector columnNames;
     Vector visitdata;
     Connection connection = Conn.connectSQLite();
     static PreparedStatement ps;
-    static ErrorLogger log = new ErrorLogger(CategoriaDAO.class.getName());
+    static ErrorLogger log = new ErrorLogger(ProductoDAO.class.getName());
     ResultSet rs = null;
 
-    public CategoriaDAO() {
+    public ProductoDAO() {
         columnNames = new Vector();
         visitdata = new Vector();
     }
 
     @Override
-    public int create(CategoriaTO d) {
+    public int create(ProductoTO d) {
         int rsId = 0;
-        String[] returns = {"nombre"};
-        String sql = "INSERT INTO categoria(id_categoria, nombre) "
-                + "VALUES(?,?)";
+        String[] returns = {"id_producto"};
+        String sql = "INSERT INTO producto(id_producto, nombreP, pu, utilidad, stock, id_categoria, id_marca) "
+                + "VALUES(?,?,?,?,?,?,?)";
         int i = 0;
         try {
             ps = connection.prepareStatement(sql, returns);
+
+            ps.setInt(++i, d.getId_producto());
+            ps.setString(++i, d.getNombreP());
+            ps.setDouble(++i, d.getPu());
+            ps.setDouble(++i, d.getUtilidad());
+            ps.setDouble(++i, d.getStock());
             ps.setInt(++i, d.getId_categoria());
-            ps.setString(++i, d.getNombre());
+            ps.setInt(++i, d.getId_marca());
 
             rsId = ps.executeUpdate();// 0 no o 1 si commit
             try ( ResultSet rs = ps.getGeneratedKeys()) {
@@ -58,22 +64,35 @@ public class CategoriaDAO implements CategoriaDaoI {
         } catch (SQLException ex) {
 //System.err.println("create:" + ex.toString());
             log.log(Level.SEVERE, "create", ex);
+
         }
         return rsId;
     }
 
     @Override
-    public int update(CategoriaTO d) {
-        System.out.println("actualizar d.id_categoria: " + d.getId_categoria());
+    public int update(ProductoTO d) {
+        System.out.println("actualizar d.getid_producto " + d.getId_producto());
         int comit = 0;
         String sql = "UPDATE cliente SET "
-                + "nombre=?, "
-                + "id_categoria=?";
+                //id_producto, nombreP, pu, utilidad, stock, id_categoria, id_marca
+                + "WHERE id_producto=?, "
+                + "nombreP=? "
+                + "pu=?, "
+                + "utilidad=?, "
+                + "stock=?, "
+                + "id_categoria=?, "
+                + "id_marca=? ";
+
         int i = 0;
         try {
             ps = connection.prepareStatement(sql);
+            ps.setInt(++i, d.getId_producto());
+            ps.setString(++i, d.getNombreP());
+            ps.setDouble(++i, d.getPu());
+            ps.setDouble(++i, d.getUtilidad());
+            ps.setDouble(++i, d.getStock());
             ps.setInt(++i, d.getId_categoria());
-            ps.setString(++i, d.getNombre());
+            ps.setInt(++i, d.getId_marca());
 
             comit = ps.executeUpdate();
         } catch (SQLException ex) {
@@ -85,7 +104,7 @@ public class CategoriaDAO implements CategoriaDaoI {
     @Override
     public int delete(String id) throws Exception {
         int comit = 0;
-        String sql = "DELETE FROM categoria";
+        String sql = "DELETE FROM cliente WHERE id_producto = ?";
         try {
             ps = connection.prepareStatement(sql);
             ps.setString(1, id);
@@ -99,53 +118,64 @@ public class CategoriaDAO implements CategoriaDaoI {
     }
 
     @Override
-    public List<CategoriaTO> listCmb(String filter) {
+    public List<ProductoTO> listCmb(String filter) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public List<CategoriaTO> listarCategoria() {
-        List<CategoriaTO> listarCategoria = new ArrayList();
-        String sql = "SELECT * FROM categoria";
+    public List<ProductoTO> listarProducto() {
+        List<ProductoTO> listarProducto = new ArrayList();
+        String sql = "SELECT * FROM producto";
         try {
             connection = new Conn().connectSQLite();
             ps = connection.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
-                CategoriaTO cat = new CategoriaTO();
-                cat.setId_categoria(rs.getInt("id_categoria"));
-                cat.setNombre(rs.getString("nombre"));
-                listarCategoria.add(cat);
+                ProductoTO pro = new ProductoTO();
+
+                pro.setId_producto(rs.getInt("id_producto"));
+                pro.setNombreP(rs.getString("nombreP"));
+                pro.setPu(rs.getDouble("Precio Unitario"));
+                pro.setUtilidad(rs.getDouble("utilidad"));
+                pro.setStock(rs.getDouble("stocc"));
+                pro.setId_categoria(rs.getInt("id_categoria"));
+                pro.setId_marca(rs.getInt("id_marca"));
+
+                listarProducto.add(pro);
             }
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        return listarCategoria;
+        return listarProducto;
     }
 
     @Override
-    public CategoriaTO buscarCategoria(String dni) {
-        CategoriaTO categoria = new CategoriaTO();
-        String sql = "SELECT * FROM categoria ";
+    public ProductoTO buscarProducto(String nombreP) {
+        ProductoTO producto = new ProductoTO();
+        String sql = "SELECT * FROM cliente WHERE dniruc = ?";
         try {
             connection = new Conn().connectSQLite();
             ps = connection.prepareStatement(sql);
-            int id_categoria = 1;
-            ps.setInt(1, id_categoria);
+            int Id_producto = 1;
+            ps.setInt(1, Id_producto);
             rs = ps.executeQuery();
             if (rs.next()) {
-                categoria.setId_categoria(rs.getInt("id_categoria"));
-                categoria.setNombre(rs.getString("nombre"));
-                
+                producto.setId_producto(rs.getInt("id_producto"));
+                producto.setNombreP(rs.getString("nombreP"));
+                producto.setPu(rs.getDouble("Precio Unitario"));
+                producto.setUtilidad(rs.getDouble("utilidad"));
+                producto.setStock(rs.getDouble("stocc"));
+                producto.setId_categoria(rs.getInt("id_categoria"));
+                producto.setId_marca(rs.getInt("id_marca"));
             }
         } catch (SQLException e) {
             System.out.println(e.toString());
         }
-        return categoria;
+        return producto;
     }
 
     @Override
-    public void reportarCategoria() {
+    public void reportarProducto() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
